@@ -1,6 +1,6 @@
 # BuyCasinoScripts.com
 
-![BuyCasinoScripts Logo](link-to-your-logo.png)
+![BuyCasinoScripts Logo](https://buycasinoscripts.com/wp-content/uploads/2024/03/Frame-588-1024x127.png)
 
 Welcome to [BuyCasinoScripts.com](https://buycasinoscripts.com), your go-to source for premium casino scripts and source codes.
 
