@@ -1,8 +1,9 @@
 # BuyCasinoScripts.com
 
 ![BuyCasinoScripts Logo](https://buycasinoscripts.com/wp-content/uploads/2024/03/Frame-588-1024x127.png)
-![BuyCasinoScripts Logo](![image](https://github.com/user-attachments/assets/304a12c9-5d6e-4190-9672-07e3258676e0)
-)
+![image](https://github.com/user-attachments/assets/dbde1ae3-59fa-4b8e-bc27-c9bfd61f49e8)
+
+
 Welcome to [BuyCasinoScripts.com](https://buycasinoscripts.com), your go-to source for premium casino scripts and source codes.
 
 ![Classiccryptocasino](https://github.com/swaga/Online-casino-script/assets/17531445/a90de531-6290-43a5-ba3b-a5fe6157d4d2)
