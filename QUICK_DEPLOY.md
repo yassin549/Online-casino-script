@@ -4,12 +4,12 @@
 
 Your Laravel casino platform is now configured with multiple deployment options to handle PHP compatibility issues.
 
-### 🎯 **Recommended: Railway with PHP 7.4**
+### 🎯 **Recommended: Railway with Minimal Docker**
 
 1. **Push to GitHub**:
    ```bash
    git add .
-   git commit -m "Add Docker deployment support"
+   git commit -m "Add minimal Docker deployment"
    git push
    ```
 
@@ -17,7 +17,7 @@ Your Laravel casino platform is now configured with multiple deployment options 
    - Go to [railway.app](https://railway.app)
    - Click "Deploy from GitHub repo"
    - Select your repository
-   - Railway will use `Dockerfile.php74` (PHP 7.4 - fully compatible)
+   - Railway will use `Dockerfile.minimal` (PHP 7.4 - maximum compatibility)
 
 3. **Add Database**:
    - In Railway dashboard: "New" → "Database" → "MySQL"
@@ -25,7 +25,9 @@ Your Laravel casino platform is now configured with multiple deployment options 
 
 ### 🐳 **Docker Files Available**:
 
-- **`Dockerfile.php74`** ✅ - PHP 7.4 (Recommended - Full Laravel 5.7 compatibility)
+- **`Dockerfile.minimal`** ✅ - PHP 7.4 (Current - No optimization, maximum compatibility)
+- **`Dockerfile.final`** ⚠️ - PHP 7.4 (With autoloader optimization - may fail)
+- **`Dockerfile.php74`** ⚠️ - PHP 7.4 (With scripts disabled)
 - **`Dockerfile`** ⚠️ - PHP 8.1 (With error handling for deprecation warnings)
 
 ### 🔧 **What Happens During Deployment**:
