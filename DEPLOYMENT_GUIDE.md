@@ -13,10 +13,13 @@
 6. **Environment Variables**: Railway will auto-configure database variables
 
 **UPDATED**: Now uses Docker instead of Nixpacks to avoid PHP version conflicts:
-- Uses PHP 8.1 with Apache in Docker container
+- **Primary**: PHP 7.4 Dockerfile (`Dockerfile.php74`) - Full compatibility with Laravel 5.7
+- **Alternative**: PHP 8.1 Dockerfile (`Dockerfile`) - With error handling for deprecation warnings
 - Includes all required PHP extensions (gmp, bcmath, zip, etc.)
 - Automatically installs dependencies and runs migrations
 - More reliable and consistent deployment
+
+**Railway Configuration**: Uses `Dockerfile.php74` by default for maximum compatibility.
 
 ### Option 2: Heroku
 [![Deploy to Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
