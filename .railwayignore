@@ -1,0 +1,25 @@
+# Ignore composer.lock to allow dependency updates
+composer.lock
+
+# Ignore development files
+.env.example
+.env.local
+.env.testing
+
+# Ignore cache and logs
+storage/logs/*
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+bootstrap/cache/*
+
+# Ignore node modules if present
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Ignore IDE files
+.vscode/
+.idea/
+*.swp
+*.swo

@@ -12,6 +12,12 @@
 5. **Add MySQL**: In Railway dashboard, click "New" → "Database" → "MySQL"
 6. **Environment Variables**: Railway will auto-configure database variables
 
+**IMPORTANT**: The deployment configuration has been updated to fix PHP compatibility issues:
+- Uses PHP 7.4 instead of PHP 8.1
+- Removes `composer.lock` during build to allow fresh dependency resolution
+- Uses `--ignore-platform-reqs` flag for compatibility
+- Automatically runs migrations during build
+
 ### Option 2: Heroku
 [![Deploy to Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
 
