@@ -1,0 +1,36 @@
+# Ignore development files
+.env
+.env.example
+.env.local
+.env.testing
+
+# Ignore cache and logs
+storage/logs/*
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+bootstrap/cache/*
+
+# Ignore node modules
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Ignore IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Ignore git
+.git/
+.gitignore
+
+# Ignore deployment files
+nixpacks.toml
+railway-deploy.sh
+.railwayignore
+
+# OS files
+.DS_Store
+Thumbs.db

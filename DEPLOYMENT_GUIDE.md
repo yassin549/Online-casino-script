@@ -2,7 +2,7 @@
 
 ## 🚀 Quick Deploy Options
 
-### Option 1: Railway (Recommended)
+### Option 1: Railway (Recommended) - Docker Deployment
 [![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template)
 
 1. **Create Railway Account**: Visit [railway.app](https://railway.app) and sign up
@@ -12,11 +12,11 @@
 5. **Add MySQL**: In Railway dashboard, click "New" → "Database" → "MySQL"
 6. **Environment Variables**: Railway will auto-configure database variables
 
-**IMPORTANT**: The deployment configuration has been updated to fix PHP compatibility issues:
-- Uses PHP 7.4 instead of PHP 8.1
-- Removes `composer.lock` during build to allow fresh dependency resolution
-- Uses `--ignore-platform-reqs` flag for compatibility
-- Automatically runs migrations during build
+**UPDATED**: Now uses Docker instead of Nixpacks to avoid PHP version conflicts:
+- Uses PHP 8.1 with Apache in Docker container
+- Includes all required PHP extensions (gmp, bcmath, zip, etc.)
+- Automatically installs dependencies and runs migrations
+- More reliable and consistent deployment
 
 ### Option 2: Heroku
 [![Deploy to Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
@@ -26,12 +26,30 @@
 3. **Add ClearDB**: Go to Resources tab → Add ClearDB MySQL addon (free tier)
 4. **Configure Variables**: Set environment variables in Settings tab
 
-### Option 3: InfinityFree
+### Option 3: Render.com (New Alternative)
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com)
+
+1. **Create Render Account**: Visit [render.com](https://render.com) and sign up
+2. **Connect GitHub**: Link your GitHub repository
+3. **Create Blueprint**: Use the `render.yaml` file for automatic setup
+4. **Deploy**: Render will automatically create web service and database
+5. **Free Tier**: 750 hours/month free (enough for testing)
+
+### Option 4: InfinityFree
 1. **Sign up**: Visit [infinityfree.net](https://infinityfree.net)
-2. **Create Account**: Free hosting with PHP 7.4+ support
+2. **Create Account**: Free hosting with PHP 8.1+ support
 3. **Upload Files**: Use File Manager or FTP to upload project files
 4. **Create Database**: Use MySQL Database Wizard in control panel
 5. **Configure**: Update `.env` file with database credentials
+
+### Option 5: Local Development with Docker
+```bash
+# Clone and run locally
+git clone <your-repo>
+cd Online-casino-script
+docker-compose up -d
+```
+Access at: http://localhost
 
 ## 🔧 Manual Setup Steps
 
@@ -49,6 +67,13 @@ php artisan migrate --force
 # Seed database (optional)
 php artisan db:seed --force
 ```
+
+### Docker Deployment (All Platforms)
+The project now includes Docker support for consistent deployment:
+- **Dockerfile**: PHP 8.1 + Apache with all extensions
+- **docker-compose.yml**: Local development with MySQL
+- **render.yaml**: Render.com deployment configuration
+- **.dockerignore**: Optimized build context
 
 ### 2. Required Environment Variables
 ```env
