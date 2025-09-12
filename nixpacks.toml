@@ -1,16 +1,15 @@
 [phases.setup]
-nixPkgs = ['php74', 'php74Packages.composer', 'nodejs-18_x']
+nixPkgs = ['php82', 'php82Packages.composer', 'nodejs-18_x']
 
 [phases.install]
 cmds = [
     'rm -f composer.lock',
-    'composer update --no-dev --optimize-autoloader --ignore-platform-reqs --no-interaction',
+    'composer install --no-dev --optimize-autoloader --ignore-platform-reqs --no-interaction',
     'php artisan key:generate --force'
 ]
 
 [phases.build]
 cmds = [
-    'php artisan migrate --force',
     'php artisan config:cache',
     'php artisan route:cache',
     'php artisan view:cache'
