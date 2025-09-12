@@ -1,0 +1,48 @@
+{
+  "name": "Laravel Casino Platform",
+  "description": "A Laravel-based online casino platform",
+  "keywords": ["laravel", "php", "casino", "gambling"],
+  "website": "https://buycasinoscripts.com",
+  "repository": "https://github.com/yassin549/Online-casino-script",
+  "logo": "https://buycasinoscripts.com/wp-content/uploads/2024/03/Frame-588-1024x127.png",
+  "success_url": "/",
+  "scripts": {
+    "postdeploy": "php artisan migrate --force && php artisan db:seed --force && php artisan key:generate --force && php artisan config:cache && php artisan route:cache && php artisan view:cache"
+  },
+  "env": {
+    "APP_KEY": {
+      "description": "Laravel application key",
+      "generator": "secret"
+    },
+    "APP_ENV": {
+      "value": "production"
+    },
+    "APP_DEBUG": {
+      "value": "false"
+    },
+    "APP_URL": {
+      "description": "The URL of your application"
+    },
+    "DB_CONNECTION": {
+      "value": "mysql"
+    },
+    "PURCHASE_CODE": {
+      "description": "Your BuyCasinoScripts purchase code",
+      "required": false
+    }
+  },
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "free"
+    }
+  },
+  "addons": [
+    "cleardb:ignite"
+  ],
+  "buildpacks": [
+    {
+      "url": "heroku/php"
+    }
+  ]
+}
