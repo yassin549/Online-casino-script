@@ -11,7 +11,13 @@ if [ -z "$APP_KEY" ] || [ "$APP_KEY" = "" ]; then
     php artisan key:generate --force
 fi
 
-# Clear all cache files first
+# Set up cache directory and permissions first
+echo "Setting up cache directory and permissions..."
+mkdir -p bootstrap/cache
+chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+
+# Clear all cache files
 echo "Clearing all cache files..."
 rm -f bootstrap/cache/*.php
 
@@ -23,11 +29,6 @@ echo '<?php return [];' > bootstrap/cache/packages.php
 echo "Clearing and caching configuration..."
 php artisan config:clear
 php artisan config:cache
-
-# Set proper permissions first
-echo "Setting permissions..."
-chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
-chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
 # Wait for database to be ready
 echo "Waiting for database connection..."
