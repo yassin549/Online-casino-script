@@ -25,14 +25,26 @@ echo "Setting permissions..."
 chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Skip database operations to avoid package manifest loading
-echo "Skipping database operations to avoid package manifest errors..."
+# Wait for database to be ready
+echo "Waiting for database connection..."
+until php artisan migrate:status > /dev/null 2>&1; do
+    echo "Database not ready, waiting..."
+    sleep 2
+done
 
-# Skip package discovery and caching for now to avoid errors
-echo "Skipping package discovery to avoid manifest errors..."
+# Run database migrations
+echo "Running database migrations..."
+php artisan migrate --force
 
-# Only cache config if absolutely necessary
-echo "Skipping config cache to avoid manifest errors..."
+# Ensure laravel.log exists and has correct permissions
+echo "Ensuring laravel.log exists and has correct permissions..."
+touch /var/www/html/storage/logs/laravel.log
+chown www-data:www-data /var/www/html/storage/logs/laravel.log
+chmod 664 /var/www/html/storage/logs/laravel.log
+
+# Create basic packages manifest to prevent errors
+echo "Creating basic packages manifest..."
+echo '<?php return ["providers" => [], "eager" => [], "deferred" => []];' > bootstrap/cache/packages.php
 
 echo "Starting Apache..."
 exec apache2-foreground
