@@ -41,9 +41,14 @@ RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
 # Configure Apache virtual host
 RUN echo '<VirtualHost *:80>\n\
     DocumentRoot /var/www/html/public\n\
+    <Directory /var/www/html>\n\
+        AllowOverride All\n\
+        Require all granted\n\
+    </Directory>\n\
     <Directory /var/www/html/public>\n\
         AllowOverride All\n\
         Require all granted\n\
+        DirectoryIndex index.php\n\
     </Directory>\n\
     ErrorLog ${APACHE_LOG_DIR}/error.log\n\
     CustomLog ${APACHE_LOG_DIR}/access.log combined\n\

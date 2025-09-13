@@ -1,13 +1,9 @@
 #!/bin/bash
 
-# Wait for database to be ready
-echo "Waiting for database connection..."
-until php artisan tinker --execute="DB::connection()->getPdo();" 2>/dev/null; do
-    echo "Database not ready, waiting 5 seconds..."
-    sleep 5
-done
+# Set error handling
+set -e
 
-echo "Database connected successfully!"
+echo "Starting Laravel application setup..."
 
 # Generate application key if not set
 if [ -z "$APP_KEY" ] || [ "$APP_KEY" = "" ]; then
@@ -15,24 +11,34 @@ if [ -z "$APP_KEY" ] || [ "$APP_KEY" = "" ]; then
     php artisan key:generate --force
 fi
 
-# Run migrations
-echo "Running database migrations..."
-php artisan migrate --force || echo "Migration failed, continuing..."
+# Clear any existing cache
+echo "Clearing cache..."
+php artisan config:clear || true
+php artisan cache:clear || true
+php artisan view:clear || true
+php artisan route:clear || true
 
-# Clear and cache configurations
-echo "Caching configurations..."
-php artisan config:cache || echo "Config cache failed, continuing..."
-php artisan route:cache || echo "Route cache failed, continuing..."
-php artisan view:cache || echo "View cache failed, continuing..."
+# Set proper permissions first
+echo "Setting permissions..."
+chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+
+# Check if database is available (optional for startup)
+echo "Checking database connection..."
+if php artisan tinker --execute="try { DB::connection()->getPdo(); echo 'DB OK'; } catch(Exception \$e) { echo 'DB Error: ' . \$e->getMessage(); }" 2>/dev/null | grep -q "DB OK"; then
+    echo "Database connected, running migrations..."
+    php artisan migrate --force || echo "Migration failed, continuing..."
+else
+    echo "Database not available, skipping migrations..."
+fi
 
 # Discover packages
 echo "Discovering packages..."
 php artisan package:discover || echo "Package discovery failed, continuing..."
 
-# Set proper permissions
-echo "Setting permissions..."
-chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
-chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+# Cache configurations (only if no errors)
+echo "Caching configurations..."
+php artisan config:cache || echo "Config cache failed, continuing..."
 
 echo "Starting Apache..."
 exec apache2-foreground
