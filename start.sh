@@ -11,13 +11,15 @@ if [ -z "$APP_KEY" ] || [ "$APP_KEY" = "" ]; then
     php artisan key:generate --force
 fi
 
-# Clear any existing cache and package manifest aggressively
-echo "Clearing cache and package manifest..."
-rm -f bootstrap/cache/packages.php || true
-rm -f bootstrap/cache/services.php || true
-rm -f bootstrap/cache/config.php || true
-rm -f bootstrap/cache/*.php || true
-# Force clear and recache configuration to use new DATABASE_URL
+# Clear all cache files first
+echo "Clearing all cache files..."
+rm -f bootstrap/cache/*.php
+
+# Create a dummy package manifest to prevent discovery errors
+echo "Creating dummy package manifest..."
+echo '<?php return [];' > bootstrap/cache/packages.php
+
+# Now, safely clear and cache the configuration
 echo "Clearing and caching configuration..."
 php artisan config:clear
 php artisan config:cache
@@ -44,9 +46,6 @@ touch /var/www/html/storage/logs/laravel.log
 chown www-data:www-data /var/www/html/storage/logs/laravel.log
 chmod 664 /var/www/html/storage/logs/laravel.log
 
-# Create basic packages manifest to prevent errors
-echo "Creating basic packages manifest..."
-echo '<?php return ["providers" => [], "eager" => [], "deferred" => []];' > bootstrap/cache/packages.php
 
 echo "Starting Apache..."
 exec apache2-foreground
