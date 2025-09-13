@@ -17,8 +17,10 @@ rm -f bootstrap/cache/packages.php || true
 rm -f bootstrap/cache/services.php || true
 rm -f bootstrap/cache/config.php || true
 rm -f bootstrap/cache/*.php || true
-# Skip artisan cache clearing to avoid PackageManifest loading
-echo "Skipping artisan cache commands to avoid package manifest errors..."
+# Force clear and recache configuration to use new DATABASE_URL
+echo "Clearing and caching configuration..."
+php artisan config:clear
+php artisan config:cache
 
 # Set proper permissions first
 echo "Setting permissions..."
