@@ -11,6 +11,7 @@ RUN apt-get update && apt-get install -y \
     unzip \
     libzip-dev \
     libgmp-dev \
+    gettext-base \
     && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip gmp \
     && a2enmod rewrite
 
@@ -51,20 +52,35 @@ RUN echo '<VirtualHost *:80>\n\
     CustomLog ${APACHE_LOG_DIR}/access.log combined\n\
 </VirtualHost>' > /etc/apache2/sites-available/000-default.conf
 
-# Create startup script with aggressive package manifest fix
+# Create .env file from environment variables
+RUN echo 'APP_NAME="${APP_NAME}"\n\
+APP_ENV="${APP_ENV}"\n\
+APP_KEY="${APP_KEY}"\n\
+APP_DEBUG="${APP_DEBUG}"\n\
+APP_URL="${APP_URL}"\n\
+\n\
+DB_CONNECTION="${DB_CONNECTION}"\n\
+DB_HOST="${DB_HOST}"\n\
+DB_PORT="${DB_PORT}"\n\
+DB_DATABASE="${DB_DATABASE}"\n\
+DB_USERNAME="${DB_USERNAME}"\n\
+DB_PASSWORD="${DB_PASSWORD}"' > .env.template
+
+# Create startup script that creates .env and starts Laravel properly
 RUN echo '#!/bin/bash\n\
 set -e\n\
-echo "Starting Laravel application..."\n\
-echo "Fixing package discovery..."\n\
+echo "Creating .env file from environment variables..."\n\
+envsubst < .env.template > .env\n\
+echo "Clearing caches..."\n\
 rm -rf bootstrap/cache/*\n\
 echo "<?php return [];" > bootstrap/cache/packages.php\n\
 echo "<?php return [];" > bootstrap/cache/services.php\n\
-echo "<?php return [];" > bootstrap/cache/config.php\n\
-composer dump-autoload --no-scripts --no-dev || true\n\
-echo "Generating application key..."\n\
-php artisan key:generate --force --no-interaction || true\n\
-echo "Running database migrations..."\n\
-php artisan migrate --force --no-interaction || true\n\
+php artisan config:clear || true\n\
+php artisan cache:clear || true\n\
+echo "Testing database connection..."\n\
+php artisan migrate:status || echo "Migration status check failed"\n\
+echo "Running migrations..."\n\
+php artisan migrate --force || echo "Migrations failed"\n\
 echo "Starting Apache..."\n\
 apache2-foreground' > /usr/local/bin/start.sh \
     && chmod +x /usr/local/bin/start.sh
