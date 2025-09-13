@@ -11,6 +11,8 @@ RUN apt-get update && apt-get install -y \
     unzip \
     libgmp-dev \
     libzip-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd gmp zip json \
     && a2enmod rewrite
