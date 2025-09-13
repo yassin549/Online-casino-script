@@ -59,12 +59,8 @@ APP_KEY="${APP_KEY}"\n\
 APP_DEBUG="${APP_DEBUG}"\n\
 APP_URL="${APP_URL}"\n\
 \n\
-DB_CONNECTION="${DB_CONNECTION}"\n\
-DB_HOST="${DB_HOST}"\n\
-DB_PORT="${DB_PORT}"\n\
-DB_DATABASE="${DB_DATABASE}"\n\
-DB_USERNAME="${DB_USERNAME}"\n\
-DB_PASSWORD="${DB_PASSWORD}"' > .env.template
+DB_CONNECTION=mysql\n\
+DATABASE_URL="${DB_URL}"' > .env.template
 
 # Create startup script that creates .env and starts Laravel properly
 RUN echo '#!/bin/bash\n\
