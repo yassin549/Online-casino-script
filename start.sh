@@ -4,7 +4,7 @@
 set -e
 
 # Run all setup as the www-data user to ensure correct permissions
-su -s /bin/bash -c "
+sudo -E -u www-data /bin/bash -c "
     echo \"Starting Laravel application setup as www-data user...\"
 
     # Generate application key if not set
@@ -39,7 +39,7 @@ su -s /bin/bash -c "
     # Ensure laravel.log exists
     touch /var/www/html/storage/logs/laravel.log
 
-" www-data
+"
 
 # Set final permissions just in case
 chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
