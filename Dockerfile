@@ -1,4 +1,4 @@
-FROM php:8.1-apache
+FROM php:7.4-apache
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -9,9 +9,10 @@ RUN apt-get update && apt-get install -y \
     libxml2-dev \
     zip \
     unzip \
-    libzip-dev \
     libgmp-dev \
-    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip gmp \
+    libzip-dev \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd gmp zip json \
     && a2enmod rewrite
 
 # Get latest Composer
@@ -20,18 +21,22 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /var/www/html
 
-# Copy application files
-COPY . .
+# Copy existing application directory contents
+COPY . /var/www/html
 
-# Install PHP dependencies
-RUN composer install --no-dev --optimize-autoloader --ignore-platform-reqs --no-scripts
+# Install dependencies
+RUN composer install --no-dev --optimize-autoloader --no-interaction
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 755 /var/www/html/storage \
-    && chmod -R 755 /var/www/html/bootstrap/cache
+    && chmod -R 755 /var/www/html \
+    && chmod -R 775 /var/www/html/storage \
+    && chmod -R 775 /var/www/html/bootstrap/cache
 
 # Configure Apache
+RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
+
+# Configure Apache virtual host
 RUN echo '<VirtualHost *:80>\n\
     DocumentRoot /var/www/html/public\n\
     <Directory /var/www/html/public>\n\
@@ -42,16 +47,12 @@ RUN echo '<VirtualHost *:80>\n\
     CustomLog ${APACHE_LOG_DIR}/access.log combined\n\
 </VirtualHost>' > /etc/apache2/sites-available/000-default.conf
 
-# Create startup script
-RUN echo '#!/bin/bash\n\
-php artisan key:generate --force\n\
-php artisan migrate --force || echo "Migration failed, continuing..."\n\
-php artisan config:cache || echo "Config cache failed, continuing..."\n\
-php artisan route:cache || echo "Route cache failed, continuing..."\n\
-php artisan view:cache || echo "View cache failed, continuing..."\n\
-apache2-foreground' > /usr/local/bin/start.sh \
-    && chmod +x /usr/local/bin/start.sh
+# Copy startup script
+COPY start.sh /usr/local/bin/start.sh
+RUN chmod +x /usr/local/bin/start.sh
 
+# Expose port 80
 EXPOSE 80
 
+# Start with our custom script
 CMD ["/usr/local/bin/start.sh"]
