@@ -11,8 +11,11 @@ if [ -z "$APP_KEY" ] || [ "$APP_KEY" = "" ]; then
     php artisan key:generate --force
 fi
 
-# Clear any existing cache
-echo "Clearing cache..."
+# Clear any existing cache and package manifest
+echo "Clearing cache and package manifest..."
+rm -f bootstrap/cache/packages.php || true
+rm -f bootstrap/cache/services.php || true
+rm -f bootstrap/cache/config.php || true
 php artisan config:clear || true
 php artisan cache:clear || true
 php artisan view:clear || true
@@ -32,13 +35,11 @@ else
     echo "Database not available, skipping migrations..."
 fi
 
-# Discover packages
-echo "Discovering packages..."
-php artisan package:discover || echo "Package discovery failed, continuing..."
+# Skip package discovery and caching for now to avoid errors
+echo "Skipping package discovery to avoid manifest errors..."
 
-# Cache configurations (only if no errors)
-echo "Caching configurations..."
-php artisan config:cache || echo "Config cache failed, continuing..."
+# Only cache config if absolutely necessary
+echo "Skipping config cache to avoid manifest errors..."
 
 echo "Starting Apache..."
 exec apache2-foreground
