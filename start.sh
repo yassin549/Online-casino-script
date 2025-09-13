@@ -3,6 +3,24 @@
 # Set error handling
 set -e
 
+# Parse Railway's DATABASE_URL into Laravel's standard DB variables
+if [ -n "$DATABASE_URL" ]; then
+    echo "Parsing DATABASE_URL..."
+    # Extract the protocol
+    proto="$(echo $DATABASE_URL | grep '://' | sed -e's,.*://,,g')"
+    # Extract the user and password (if any)
+    userpass="$(echo $proto | grep @ | cut -d@ -f1)"
+    export DB_USERNAME="$(echo $userpass | cut -d: -f1)"
+    export DB_PASSWORD="$(echo $userpass | cut -d: -f2)"
+    # Extract the host and port
+    hostport="$(echo $proto | sed -e 's,.*@,,g' | cut -d/ -f1)"
+    export DB_HOST="$(echo $hostport | cut -d: -f1)"
+    export DB_PORT="$(echo $hostport | cut -d: -f2)"
+    # Extract the database
+    export DB_DATABASE="$(echo $proto | cut -d/ -f2 | cut -d? -f1)"
+    export DB_CONNECTION="mysql"
+fi
+
 # Set up directories and permissions first
 echo "Setting up directories and permissions..."
 mkdir -p /var/www/html/storage/framework/sessions /var/www/html/storage/framework/views /var/www/html/storage/framework/cache /var/www/html/storage/logs /var/www/html/bootstrap/cache
