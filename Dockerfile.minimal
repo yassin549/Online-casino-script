@@ -56,7 +56,7 @@ RUN echo '<VirtualHost *:80>\n\
 RUN echo 'APP_NAME="${APP_NAME}"\n\
 APP_ENV="${APP_ENV}"\n\
 APP_KEY="${APP_KEY}"\n\
-APP_DEBUG="${APP_DEBUG}"\n\
+APP_DEBUG=true\n\
 APP_URL="${APP_URL}"\n\
 \n\
 DB_CONNECTION=mysql\n\
