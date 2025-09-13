@@ -29,10 +29,11 @@ RUN mkdir -p database/seeds database/factories storage/logs storage/framework/ca
 # Install dependencies and fix package manifest
 RUN composer install --no-dev --no-scripts --no-interaction --ignore-platform-reqs
 
-# Clear any cached package discovery and regenerate autoloader
+# Completely disable package discovery and regenerate autoloader
 RUN composer dump-autoload --no-scripts --no-dev \
-    && rm -f bootstrap/cache/packages.php \
-    && rm -f bootstrap/cache/services.php
+    && rm -rf bootstrap/cache/* \
+    && echo '<?php return [];' > bootstrap/cache/packages.php \
+    && echo '<?php return [];' > bootstrap/cache/services.php
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html \
@@ -50,17 +51,16 @@ RUN echo '<VirtualHost *:80>\n\
     CustomLog ${APACHE_LOG_DIR}/access.log combined\n\
 </VirtualHost>' > /etc/apache2/sites-available/000-default.conf
 
-# Create startup script with package manifest fix
+# Create startup script with aggressive package manifest fix
 RUN echo '#!/bin/bash\n\
 set -e\n\
 echo "Starting Laravel application..."\n\
-echo "Clearing Laravel caches..."\n\
-rm -f bootstrap/cache/packages.php\n\
-rm -f bootstrap/cache/services.php\n\
-rm -f bootstrap/cache/config.php\n\
-php artisan config:clear || true\n\
-php artisan cache:clear || true\n\
-php artisan view:clear || true\n\
+echo "Fixing package discovery..."\n\
+rm -rf bootstrap/cache/*\n\
+echo "<?php return [];" > bootstrap/cache/packages.php\n\
+echo "<?php return [];" > bootstrap/cache/services.php\n\
+echo "<?php return [];" > bootstrap/cache/config.php\n\
+composer dump-autoload --no-scripts --no-dev || true\n\
 echo "Generating application key..."\n\
 php artisan key:generate --force --no-interaction || true\n\
 echo "Running database migrations..."\n\
