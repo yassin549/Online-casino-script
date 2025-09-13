@@ -26,11 +26,13 @@ COPY . .
 # Create missing directories
 RUN mkdir -p database/seeds database/factories storage/logs storage/framework/cache storage/framework/sessions storage/framework/views bootstrap/cache
 
-# Install dependencies without any optimization or scripts
-RUN composer install --no-dev --no-scripts --no-interaction --no-autoloader
+# Install dependencies and fix package manifest
+RUN composer install --no-dev --no-scripts --no-interaction --ignore-platform-reqs
 
-# Generate basic autoloader without optimization
-RUN composer dump-autoload --no-scripts --no-dev
+# Clear any cached package discovery and regenerate autoloader
+RUN composer dump-autoload --no-scripts --no-dev \
+    && rm -f bootstrap/cache/packages.php \
+    && rm -f bootstrap/cache/services.php
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html \
@@ -48,11 +50,22 @@ RUN echo '<VirtualHost *:80>\n\
     CustomLog ${APACHE_LOG_DIR}/access.log combined\n\
 </VirtualHost>' > /etc/apache2/sites-available/000-default.conf
 
-# Create startup script
+# Create startup script with package manifest fix
 RUN echo '#!/bin/bash\n\
 set -e\n\
+echo "Starting Laravel application..."\n\
+echo "Clearing Laravel caches..."\n\
+rm -f bootstrap/cache/packages.php\n\
+rm -f bootstrap/cache/services.php\n\
+rm -f bootstrap/cache/config.php\n\
+php artisan config:clear || true\n\
+php artisan cache:clear || true\n\
+php artisan view:clear || true\n\
+echo "Generating application key..."\n\
 php artisan key:generate --force --no-interaction || true\n\
+echo "Running database migrations..."\n\
 php artisan migrate --force --no-interaction || true\n\
+echo "Starting Apache..."\n\
 apache2-foreground' > /usr/local/bin/start.sh \
     && chmod +x /usr/local/bin/start.sh
 
