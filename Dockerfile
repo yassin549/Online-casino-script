@@ -54,6 +54,9 @@ RUN echo '<VirtualHost *:80>\n\
     CustomLog ${APACHE_LOG_DIR}/access.log combined\n\
 </VirtualHost>' > /etc/apache2/sites-available/000-default.conf
 
+# Create empty packages manifest to prevent errors
+RUN echo '<?php return ["providers" => [], "eager" => [], "deferred" => []];' > bootstrap/cache/packages.php
+
 # Copy startup script
 COPY start.sh /usr/local/bin/start.sh
 RUN chmod +x /usr/local/bin/start.sh

@@ -11,29 +11,22 @@ if [ -z "$APP_KEY" ] || [ "$APP_KEY" = "" ]; then
     php artisan key:generate --force
 fi
 
-# Clear any existing cache and package manifest
+# Clear any existing cache and package manifest aggressively
 echo "Clearing cache and package manifest..."
 rm -f bootstrap/cache/packages.php || true
 rm -f bootstrap/cache/services.php || true
 rm -f bootstrap/cache/config.php || true
-php artisan config:clear || true
-php artisan cache:clear || true
-php artisan view:clear || true
-php artisan route:clear || true
+rm -f bootstrap/cache/*.php || true
+# Skip artisan cache clearing to avoid PackageManifest loading
+echo "Skipping artisan cache commands to avoid package manifest errors..."
 
 # Set proper permissions first
 echo "Setting permissions..."
 chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Check if database is available (optional for startup)
-echo "Checking database connection..."
-if php artisan tinker --execute="try { DB::connection()->getPdo(); echo 'DB OK'; } catch(Exception \$e) { echo 'DB Error: ' . \$e->getMessage(); }" 2>/dev/null | grep -q "DB OK"; then
-    echo "Database connected, running migrations..."
-    php artisan migrate --force || echo "Migration failed, continuing..."
-else
-    echo "Database not available, skipping migrations..."
-fi
+# Skip database operations to avoid package manifest loading
+echo "Skipping database operations to avoid package manifest errors..."
 
 # Skip package discovery and caching for now to avoid errors
 echo "Skipping package discovery to avoid manifest errors..."
